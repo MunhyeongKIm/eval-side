@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  githubUrl   String?
+  type        String      // "concept" | "github"
+  status      String      @default("pending")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  evaluation  Evaluation?
+}
+
+model Evaluation {
+  id                  String   @id @default(cuid())
+  projectId           String   @unique
+  project             Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  totalScore          Int?
+  verdict             String?
+  summary             String?
+  techScore           Int?
+  techAnalysis        String?
+  marketScore         Int?
+  marketAnalysis      String?
+  uxScore             Int?
+  uxAnalysis          String?
+  feasibilityScore    Int?
+  feasibilityAnalysis String?
+  growthScore         Int?
+  growthAnalysis      String?
+  riskScore           Int?
+  riskAnalysis        String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
