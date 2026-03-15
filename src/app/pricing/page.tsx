@@ -130,8 +130,35 @@ export default function PricingPage() {
         ))}
       </div>
 
-      <section className="text-center text-gray-600 text-xs pb-8">
-        All plans include access to the public leaderboard and community reports.
+      {/* FAQ */}
+      <section className="max-w-2xl mx-auto space-y-4 animate-fade-in-delay-2 pb-8">
+        <h2 className="text-xl font-bold text-white text-center mb-6">Frequently Asked Questions</h2>
+        {[
+          {
+            q: 'How does the AI evaluation work?',
+            a: 'We run 6 specialized AI agents in parallel, each analyzing a different dimension of your project: technical quality, market fit, UX, feasibility, growth potential, and risk. Results are combined into a single score out of 100.',
+          },
+          {
+            q: 'How accurate is the dollar valuation?',
+            a: 'Valuations are estimates based on real transaction data from Acquire.com, Flippa, and public acquisition records. They indicate a range, not a guaranteed price.',
+          },
+          {
+            q: "Can I evaluate a project that's just an idea?",
+            a: 'Yes! You can submit a text description of your concept. GitHub-linked projects get a more detailed analysis since we can inspect the actual code, but concept evaluations still provide valuable insights.',
+          },
+          {
+            q: 'Is my code or idea kept private?',
+            a: 'Project submissions and evaluations are visible on the public leaderboard. We only analyze publicly available information from GitHub repositories.',
+          },
+        ].map((faq) => (
+          <div key={faq.q} className="bg-gray-900 rounded-xl border border-gray-800 p-5">
+            <h3 className="font-medium text-white text-sm mb-2">{faq.q}</h3>
+            <p className="text-sm text-gray-400 leading-relaxed">{faq.a}</p>
+          </div>
+        ))}
+        <p className="text-center text-gray-600 text-xs pt-4">
+          All plans include access to the public leaderboard and community reports.
+        </p>
       </section>
     </div>
   );

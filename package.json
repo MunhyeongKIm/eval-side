@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "db:update-descriptions": "npx tsx prisma/update-descriptions.ts",
-    "db:seed-evaluations": "npx tsx prisma/seed-evaluations.ts"
+    "db:seed-evaluations": "npx tsx prisma/seed-evaluations.ts",
+    "db:seed-more": "npx tsx prisma/seed-more-projects.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.43",

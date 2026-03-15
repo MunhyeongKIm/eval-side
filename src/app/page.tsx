@@ -116,14 +116,73 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Submit Form */}
+      {/* What You Get */}
       <section className="animate-fade-in-delay-2">
+        <div className="text-center mb-8">
+          <p className="text-xs font-medium text-emerald-400 uppercase tracking-widest mb-2">Deliverables</p>
+          <h2 className="text-2xl font-bold text-white">What You Get</h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Score & Verdict */}
+          <div className="bg-gray-900/60 rounded-xl p-5 border border-gray-800/50 hover:border-gray-700/50 transition">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-3">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+              </svg>
+            </div>
+            <h3 className="font-semibold text-white text-sm mb-1">Score &amp; Verdict</h3>
+            <p className="text-xs text-gray-500 leading-relaxed">Overall score out of 100 with a clear pass/fail verdict</p>
+          </div>
+
+          {/* Dollar Valuation */}
+          <div className="bg-gray-900/60 rounded-xl p-5 border border-gray-800/50 hover:border-gray-700/50 transition">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-3">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+            </div>
+            <h3 className="font-semibold text-white text-sm mb-1">Dollar Valuation</h3>
+            <p className="text-xs text-gray-500 leading-relaxed">Estimated market value based on real Acquire.com &amp; Flippa data</p>
+          </div>
+
+          {/* Comparable Cases */}
+          <div className="bg-gray-900/60 rounded-xl p-5 border border-gray-800/50 hover:border-gray-700/50 transition">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-3">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
+            <h3 className="font-semibold text-white text-sm mb-1">Comparable Cases</h3>
+            <p className="text-xs text-gray-500 leading-relaxed">Real projects at your tier — deals, team sizes, tech stacks</p>
+          </div>
+
+          {/* Action Roadmap */}
+          <div className="bg-gray-900/60 rounded-xl p-5 border border-gray-800/50 hover:border-gray-700/50 transition">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-3">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+              </svg>
+            </div>
+            <h3 className="font-semibold text-white text-sm mb-1">Action Roadmap</h3>
+            <p className="text-xs text-gray-500 leading-relaxed">Specific improvements ranked by impact across all 6 dimensions</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Submit Form */}
+      <section className="animate-fade-in-delay-3">
         <SubmitForm />
       </section>
 
       {/* Top Projects */}
       {topProjects.length > 0 && (
-        <section className="space-y-5 animate-fade-in-delay-2">
+        <section className="space-y-5 animate-fade-in-delay-3">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-white">Top Rated Projects</h2>
             <Link href="/leaderboard" className="text-sm text-gray-400 hover:text-white transition flex items-center gap-1">
