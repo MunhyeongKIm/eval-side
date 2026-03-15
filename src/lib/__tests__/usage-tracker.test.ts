@@ -1,35 +1,48 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Re-import to get fresh module state
-let checkDailyLimit: typeof import('@/lib/usage-tracker').checkDailyLimit;
-let recordUsage: typeof import('@/lib/usage-tracker').recordUsage;
-let getUsageStats: typeof import('@/lib/usage-tracker').getUsageStats;
+// Mock the rate-limiter module
+vi.mock('@/lib/rate-limiter', () => ({
+  checkDailyGlobalLimit: vi.fn(),
+  checkHourlyGlobalLimit: vi.fn(),
+}));
 
-beforeEach(async () => {
-  // Reset module state by re-importing
-  const mod = await import('@/lib/usage-tracker');
-  checkDailyLimit = mod.checkDailyLimit;
-  recordUsage = mod.recordUsage;
-  getUsageStats = mod.getUsageStats;
+import { checkDailyLimit, checkHourlyLimit, getUsageStats } from '@/lib/usage-tracker';
+import { checkDailyGlobalLimit, checkHourlyGlobalLimit } from '@/lib/rate-limiter';
+
+const mockCheckDaily = vi.mocked(checkDailyGlobalLimit);
+const mockCheckHourly = vi.mocked(checkHourlyGlobalLimit);
+
+beforeEach(() => {
+  vi.clearAllMocks();
 });
 
 describe('usage-tracker', () => {
-  it('allows usage when under limit', () => {
-    const { allowed } = checkDailyLimit();
-    expect(allowed).toBe(true);
+  it('allows usage when under daily limit', async () => {
+    mockCheckDaily.mockResolvedValue({ allowed: true, remaining: 99 });
+    const result = await checkDailyLimit();
+    expect(result.allowed).toBe(true);
+    expect(result.remaining).toBe(99);
+    expect(mockCheckDaily).toHaveBeenCalledWith(100);
   });
 
-  it('tracks usage count', () => {
-    recordUsage();
-    recordUsage();
+  it('blocks usage when daily limit exceeded', async () => {
+    mockCheckDaily.mockResolvedValue({ allowed: false, remaining: 0 });
+    const result = await checkDailyLimit();
+    expect(result.allowed).toBe(false);
+    expect(result.remaining).toBe(0);
+  });
+
+  it('checks hourly limit for burst protection', async () => {
+    mockCheckHourly.mockResolvedValue({ allowed: true, remaining: 29 });
+    const result = await checkHourlyLimit();
+    expect(result.allowed).toBe(true);
+    expect(result.remaining).toBe(29);
+    expect(mockCheckHourly).toHaveBeenCalledWith(30);
+  });
+
+  it('returns usage stats with correct limits', () => {
     const stats = getUsageStats();
-    expect(stats.count).toBeGreaterThanOrEqual(2);
-    expect(stats.limit).toBe(100);
-  });
-
-  it('returns remaining count', () => {
-    const { remaining } = checkDailyLimit();
-    expect(remaining).toBeGreaterThan(0);
-    expect(remaining).toBeLessThanOrEqual(100);
+    expect(stats.dailyLimit).toBe(100);
+    expect(stats.hourlyLimit).toBe(30);
   });
 });

@@ -19,6 +19,17 @@ model Project {
   evaluation  Evaluation?
 }
 
+model RateLimit {
+  id     String   @id @default(cuid())
+  key    String   // "ip:1.2.3.4" or "global:daily" or "global:hourly"
+  count  Int      @default(1)
+  window DateTime // window start time
+
+  @@unique([key, window])
+  @@index([key])
+  @@index([window])
+}
+
 model Evaluation {
   id                  String   @id @default(cuid())
   projectId           String   @unique

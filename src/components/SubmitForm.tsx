@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/Toast';
 
@@ -11,16 +11,32 @@ export default function SubmitForm() {
   const [description, setDescription] = useState('');
   const [githubUrl, setGithubUrl] = useState('');
   const [loading, setLoading] = useState(false);
+  const formTimestamp = useRef<number>(Date.now());
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Reset timestamp when form mounts (page load time)
+  useEffect(() => {
+    formTimestamp.current = Date.now();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+
+    // Read honeypot field value
+    const formData = new FormData(e.currentTarget);
+    const hpValue = formData.get('_hp_field') as string;
 
     try {
       const res = await fetch('/api/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, description: description || undefined, githubUrl: githubUrl || undefined }),
+        body: JSON.stringify({
+          name,
+          description: description || undefined,
+          githubUrl: githubUrl || undefined,
+          _ts: formTimestamp.current,
+          ...(hpValue ? { _hp_field: hpValue } : {}),
+        }),
       });
 
       if (!res.ok) {
@@ -41,6 +57,18 @@ export default function SubmitForm() {
   return (
     <form onSubmit={handleSubmit} aria-label="Submit new project" className="space-y-4 bg-gray-900 rounded-xl p-6 border border-gray-800">
       <h2 className="text-lg font-semibold text-white">Submit Project</h2>
+
+      {/* Honeypot field - hidden from real users, bots will fill it */}
+      <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+        <label htmlFor="_hp_field">Leave this empty</label>
+        <input
+          type="text"
+          id="_hp_field"
+          name="_hp_field"
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
 
       <div>
         <label className="block text-sm text-gray-400 mb-1">Project Name *</label>

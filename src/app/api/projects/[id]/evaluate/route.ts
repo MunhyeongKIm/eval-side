@@ -3,7 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { analyzeRepo } from '@/lib/github-analyzer';
 import { evaluateProject } from '@/lib/evaluator';
 import { EvaluationInput } from '@/lib/types';
-import { checkDailyLimit, recordUsage } from '@/lib/usage-tracker';
+import { checkRateLimit, cleanupExpiredRecords } from '@/lib/rate-limiter';
+import { checkDailyLimit, checkHourlyLimit } from '@/lib/usage-tracker';
 
 const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
 const RATE_LIMIT_MAX_DEFAULT = 5;
@@ -13,32 +14,16 @@ const API_KEYS = new Set(
   (process.env.API_KEYS || '').split(',').map((k) => k.trim()).filter(Boolean),
 );
 
-interface RateLimitEntry {
-  timestamps: number[];
-}
+function getClientIp(request: NextRequest): string {
+  // Prefer x-real-ip (set by Vercel's proxy, not spoofable by client)
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) return realIp.trim();
 
-const rateLimitMap = new Map<string, RateLimitEntry>();
+  // Fallback to x-forwarded-for first entry
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) return forwarded.split(',')[0].trim();
 
-function checkRateLimit(ip: string, max: number = RATE_LIMIT_MAX_DEFAULT): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-
-  if (!entry) {
-    rateLimitMap.set(ip, { timestamps: [now] });
-    return true;
-  }
-
-  // Remove expired timestamps
-  entry.timestamps = entry.timestamps.filter(
-    (ts) => now - ts < RATE_LIMIT_WINDOW_MS
-  );
-
-  if (entry.timestamps.length >= max) {
-    return false;
-  }
-
-  entry.timestamps.push(now);
-  return true;
+  return 'unknown';
 }
 
 export async function POST(
@@ -47,23 +32,41 @@ export async function POST(
 ) {
   const { id } = await params;
 
-  const ip =
-    request.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? 'unknown';
+  const ip = getClientIp(request);
 
   // API key authentication (optional - relaxes rate limit)
   const apiKey = request.headers.get('x-api-key');
   const isAuthenticated = apiKey != null && API_KEYS.has(apiKey);
-  const rateLimit = isAuthenticated ? RATE_LIMIT_MAX_AUTHENTICATED : RATE_LIMIT_MAX_DEFAULT;
+  const maxRequests = isAuthenticated ? RATE_LIMIT_MAX_AUTHENTICATED : RATE_LIMIT_MAX_DEFAULT;
 
-  if (!checkRateLimit(ip, rateLimit)) {
+  // DB-based per-IP rate limit
+  const ipLimit = await checkRateLimit(`ip:${ip}`, maxRequests, RATE_LIMIT_WINDOW_MS);
+  if (!ipLimit.allowed) {
     return NextResponse.json(
-      { error: 'Too many requests. Please wait before evaluating again.' },
+      {
+        error: 'Too many requests. Please wait before evaluating again.',
+        retryAfterMs: ipLimit.retryAfterMs,
+      },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': String(Math.ceil(ipLimit.retryAfterMs / 1000)),
+        },
+      }
+    );
+  }
+
+  // Hourly global limit check (burst protection)
+  const hourlyCheck = await checkHourlyLimit();
+  if (!hourlyCheck.allowed) {
+    return NextResponse.json(
+      { error: '시간당 평가 한도에 도달했습니다. 잠시 후 다시 시도해주세요.', remaining: hourlyCheck.remaining },
       { status: 429 }
     );
   }
 
-  // Daily usage limit check
-  const dailyCheck = checkDailyLimit();
+  // Daily global limit check
+  const dailyCheck = await checkDailyLimit();
   if (!dailyCheck.allowed) {
     return NextResponse.json(
       { error: 'Daily evaluation limit reached. Please try again tomorrow.', remaining: dailyCheck.remaining },
@@ -155,7 +158,8 @@ export async function POST(
       data: { status: 'completed' },
     });
 
-    recordUsage();
+    // Periodically clean up old rate limit records (non-blocking)
+    cleanupExpiredRecords().catch(() => {});
 
     return NextResponse.json({ message: 'Evaluation completed', totalScore: report.totalScore, verdict: report.verdict });
   } catch (e) {
