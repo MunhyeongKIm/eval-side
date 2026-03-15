@@ -37,17 +37,25 @@ export default async function LeaderboardPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="text-center pt-8 pb-4 animate-fade-in">
+        <p className="text-xs font-medium text-blue-400 uppercase tracking-widest mb-2">Rankings</p>
         <h1 className="text-3xl sm:text-4xl font-bold mb-2">Leaderboard</h1>
         <p className="text-gray-500 text-sm">
-          {projects.length} project{projects.length !== 1 ? 's' : ''} evaluated
+          {projects.length} project{projects.length !== 1 ? 's' : ''} evaluated and ranked by AI score
         </p>
       </div>
 
       {projects.length === 0 ? (
         <div className="text-center py-16 bg-gray-900/30 rounded-xl border border-dashed border-gray-800">
-          <p className="text-gray-500 mb-4">No projects have been evaluated yet</p>
-          <Link href="/" className="text-sm text-blue-400 hover:text-blue-300 transition">
-            Submit your first project
+          <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center mx-auto mb-4">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M8 21l4-4 4 4M12 17V3M3 11l4-4 4 4M13 11l4-4 4 4" />
+            </svg>
+          </div>
+          <p className="text-gray-500 mb-1">No projects have been evaluated yet</p>
+          <p className="text-sm text-gray-600 mb-4">Submit and evaluate a project to see it on the leaderboard</p>
+          <Link href="/" className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition">
+            Submit a project
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 8h10M9 4l4 4-4 4" /></svg>
           </Link>
         </div>
       ) : (

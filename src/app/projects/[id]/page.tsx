@@ -82,17 +82,20 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
 
       {/* Evaluate CTA */}
       {!eval_ && project.status !== 'evaluating' && (
-        <div className="bg-gray-900 rounded-xl p-8 border border-gray-800 text-center">
-          <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center mx-auto mb-4">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round">
-              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-            </svg>
+        <div className="relative bg-gray-900 rounded-xl p-8 border border-gray-800 text-center overflow-hidden">
+          <div className="absolute inset-0 rounded-xl pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.08) 0%, transparent 65%)' }} />
+          <div className="relative">
+            <div className="w-12 h-12 rounded-full bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center mx-auto mb-4">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+              </svg>
+            </div>
+            <h3 className="text-white font-semibold mb-2">Ready to Evaluate</h3>
+            <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto leading-relaxed">
+              Our 6 specialized AI agents will analyze your project across technical quality, market fit, UX design, feasibility, growth potential, and risk management — delivering a comprehensive score and actionable insights.
+            </p>
+            <EvaluateButton projectId={project.id} />
           </div>
-          <h3 className="text-white font-semibold mb-2">Ready to Evaluate</h3>
-          <p className="text-sm text-gray-500 mb-4 max-w-md mx-auto">
-            6 AI agents will analyze your project across technical, market, UX, feasibility, growth, and risk dimensions.
-          </p>
-          <EvaluateButton projectId={project.id} />
         </div>
       )}
 
