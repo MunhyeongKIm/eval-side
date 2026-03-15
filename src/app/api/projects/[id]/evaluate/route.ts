@@ -40,8 +40,13 @@ export async function POST(
       }
     }
 
-    // Run evaluation
-    const report = evaluateProject(evalInput);
+    // Run evaluation with 55s timeout (Vercel 60s limit)
+    const report = await Promise.race([
+      evaluateProject(evalInput),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Evaluation timeout: exceeded 55 seconds')), 55000)
+      ),
+    ]);
 
     // Save results
     await prisma.evaluation.upsert({

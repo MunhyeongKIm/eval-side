@@ -18,6 +18,11 @@ export interface RepoAnalysis {
   lastCommitDate: string | null;
   createdAt: string;
   updatedAt: string;
+  // AI 분석 강화 필드
+  languages?: Record<string, number>;
+  hasTypeScript?: boolean;
+  hasLinting?: boolean;
+  commitFrequency?: 'daily' | 'weekly' | 'monthly' | 'inactive';
 }
 
 export interface EvaluationInput {

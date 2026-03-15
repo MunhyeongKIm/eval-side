@@ -34,14 +34,15 @@ export async function analyzeRepo(url: string): Promise<RepoAnalysis> {
 
   const { owner, repo } = parsed;
 
-  // Fetch repo info, README, tree, commits, issues in parallel
-  const [repoRes, readmeRes, treeRes, commitsRes, issuesRes, pullsRes] = await Promise.all([
+  // Fetch repo info, README, tree, commits, issues, pulls, languages in parallel
+  const [repoRes, readmeRes, treeRes, commitsRes, issuesRes, pullsRes, languagesRes] = await Promise.all([
     githubFetch(`/repos/${owner}/${repo}`),
     githubFetch(`/repos/${owner}/${repo}/readme`),
     githubFetch(`/repos/${owner}/${repo}/git/trees/HEAD?recursive=1`),
     githubFetch(`/repos/${owner}/${repo}/commits?per_page=30`),
     githubFetch(`/repos/${owner}/${repo}/issues?state=open&per_page=100`),
     githubFetch(`/repos/${owner}/${repo}/pulls?state=open&per_page=100`),
+    githubFetch(`/repos/${owner}/${repo}/languages`),
   ]);
 
   const repoData = await repoRes.json();
@@ -53,10 +54,25 @@ export async function analyzeRepo(url: string): Promise<RepoAnalysis> {
     readme = Buffer.from(readmeData.content || '', 'base64').toString('utf-8');
   }
 
+  // Languages
+  let languages: Record<string, number> | undefined;
+  if (languagesRes.ok) {
+    const langData: Record<string, number> = await languagesRes.json();
+    const totalBytes = Object.values(langData).reduce((a, b) => a + b, 0);
+    if (totalBytes > 0) {
+      languages = {};
+      for (const [lang, bytes] of Object.entries(langData)) {
+        languages[lang] = Math.round((bytes / totalBytes) * 100);
+      }
+    }
+  }
+
   // Directory structure
   let directoryStructure: string[] = [];
   let hasTests = false;
   let hasCICD = false;
+  let hasTypeScript = false;
+  let hasLinting = false;
   let dependencies: Record<string, string> = {};
 
   if (treeRes.ok) {
@@ -80,6 +96,22 @@ export async function analyzeRepo(url: string): Promise<RepoAnalysis> {
       p === '.circleci/config.yml'
     );
 
+    hasTypeScript = directoryStructure.some((p: string) =>
+      p === 'tsconfig.json' || p.startsWith('tsconfig.')
+    );
+
+    hasLinting = directoryStructure.some((p: string) =>
+      p.match(/^\.eslintrc/) !== null ||
+      p === '.eslintrc.json' ||
+      p === '.eslintrc.js' ||
+      p === '.eslintrc.cjs' ||
+      p === 'eslint.config.js' ||
+      p === 'eslint.config.mjs' ||
+      p === 'eslint.config.ts' ||
+      p === '.prettierrc' ||
+      p === 'biome.json'
+    );
+
     // Try to find and parse package.json for dependencies
     const hasPkgJson = directoryStructure.includes('package.json');
     if (hasPkgJson) {
@@ -97,11 +129,27 @@ export async function analyzeRepo(url: string): Promise<RepoAnalysis> {
   // Commits
   let recentCommitCount = 0;
   let lastCommitDate: string | null = null;
+  let commitFrequency: 'daily' | 'weekly' | 'monthly' | 'inactive' | undefined;
   if (commitsRes.ok) {
     const commits = await commitsRes.json();
     recentCommitCount = Array.isArray(commits) ? commits.length : 0;
     if (Array.isArray(commits) && commits.length > 0) {
       lastCommitDate = commits[0]?.commit?.committer?.date || null;
+
+      // Calculate commit frequency
+      if (commits.length === 1) {
+        commitFrequency = 'inactive';
+      } else if (commits.length >= 2) {
+        const firstDate = new Date(commits[commits.length - 1]?.commit?.committer?.date);
+        const lastDate = new Date(commits[0]?.commit?.committer?.date);
+        const daySpan = Math.max(1, (lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24));
+        const commitsPerDay = commits.length / daySpan;
+
+        if (commitsPerDay >= 1) commitFrequency = 'daily';
+        else if (commitsPerDay >= 1 / 7) commitFrequency = 'weekly';
+        else if (commitsPerDay >= 1 / 30) commitFrequency = 'monthly';
+        else commitFrequency = 'inactive';
+      }
     }
   }
 
@@ -129,5 +177,10 @@ export async function analyzeRepo(url: string): Promise<RepoAnalysis> {
     lastCommitDate,
     createdAt: repoData.created_at || '',
     updatedAt: repoData.updated_at || '',
+    // Enhanced fields
+    languages,
+    hasTypeScript,
+    hasLinting,
+    commitFrequency,
   };
 }

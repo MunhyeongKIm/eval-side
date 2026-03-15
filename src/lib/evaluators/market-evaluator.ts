@@ -1,6 +1,32 @@
 import { EvaluationInput, ScoreResult } from '../types';
+import { callAI } from '../ai-client';
+import { MARKET_SYSTEM_PROMPT, buildInputContext } from '../ai-prompts';
 
-export function evaluateMarket(input: EvaluationInput): ScoreResult {
+export async function evaluateMarket(input: EvaluationInput): Promise<ScoreResult> {
+  const aiResult = await callAI({
+    systemPrompt: MARKET_SYSTEM_PROMPT,
+    userPrompt: buildInputContext(input),
+    maxScore: 20,
+  });
+
+  if (aiResult) {
+    const score = Math.min(Math.max(Math.round(aiResult.score), 0), 20);
+    const percentage = (score / 20) * 100;
+    const grade = percentage >= 90 ? 'A' : percentage >= 75 ? 'B' : percentage >= 60 ? 'C' : percentage >= 40 ? 'D' : 'F';
+    return {
+      score,
+      maxScore: 20,
+      grade,
+      analysis: aiResult.analysis,
+      strengths: aiResult.strengths,
+      improvements: aiResult.improvements,
+    };
+  }
+
+  return evaluateMarketFallback(input);
+}
+
+function evaluateMarketFallback(input: EvaluationInput): ScoreResult {
   let score = 0;
   const strengths: string[] = [];
   const improvements: string[] = [];

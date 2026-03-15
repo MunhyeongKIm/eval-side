@@ -42,3 +42,6 @@ prisma/dev.db-journal
 
 # omc
 .omc/
+
+# claude
+.claude/

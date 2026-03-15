@@ -1,6 +1,32 @@
 import { EvaluationInput, ScoreResult } from '../types';
+import { callAI } from '../ai-client';
+import { UX_SYSTEM_PROMPT, buildInputContext } from '../ai-prompts';
 
-export function evaluateUX(input: EvaluationInput): ScoreResult {
+export async function evaluateUX(input: EvaluationInput): Promise<ScoreResult> {
+  const aiResult = await callAI({
+    systemPrompt: UX_SYSTEM_PROMPT,
+    userPrompt: buildInputContext(input),
+    maxScore: 15,
+  });
+
+  if (aiResult) {
+    const score = Math.min(Math.max(Math.round(aiResult.score), 0), 15);
+    const percentage = (score / 15) * 100;
+    const grade = percentage >= 90 ? 'A' : percentage >= 75 ? 'B' : percentage >= 60 ? 'C' : percentage >= 40 ? 'D' : 'F';
+    return {
+      score,
+      maxScore: 15,
+      grade,
+      analysis: aiResult.analysis,
+      strengths: aiResult.strengths,
+      improvements: aiResult.improvements,
+    };
+  }
+
+  return evaluateUXFallback(input);
+}
+
+function evaluateUXFallback(input: EvaluationInput): ScoreResult {
   let score = 0;
   const strengths: string[] = [];
   const improvements: string[] = [];
