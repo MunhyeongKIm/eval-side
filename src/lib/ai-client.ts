@@ -4,6 +4,7 @@ import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { z } from 'zod';
 
 export type AIEvaluationResponse = {
+  subscores: Record<string, number>;
   score: number;
   analysis: string;
   strengths: string[];
@@ -27,6 +28,7 @@ export async function callAI(options: AICallOptions): Promise<AIEvaluationRespon
   const { systemPrompt, userPrompt, maxScore } = options;
 
   const schema = z.object({
+    subscores: z.record(z.string(), z.number()),
     score: z.number().min(0).max(maxScore),
     analysis: z.string(),
     strengths: z.array(z.string()),

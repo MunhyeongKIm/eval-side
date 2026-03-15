@@ -10,14 +10,14 @@ const verdictStyles: Record<string, string> = {
 };
 
 const verdictLabels: Record<string, string> = {
-  PASS: '통과',
-  CONDITIONAL_PASS: '조건부 통과',
-  NEEDS_WORK: '개선 필요',
-  FAIL: '재검토 필요',
-  pending: '대기중',
-  evaluating: '평가중',
-  completed: '완료',
-  failed: '실패',
+  PASS: 'Pass',
+  CONDITIONAL_PASS: 'Conditional Pass',
+  NEEDS_WORK: 'Needs Work',
+  FAIL: 'Needs Review',
+  pending: 'Pending',
+  evaluating: 'Evaluating',
+  completed: 'Completed',
+  failed: 'Failed',
 };
 
 export default function Badge({ value }: { value: string }) {

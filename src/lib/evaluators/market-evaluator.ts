@@ -6,16 +6,21 @@ export async function evaluateMarket(input: EvaluationInput): Promise<ScoreResul
   const aiResult = await callAI({
     systemPrompt: MARKET_SYSTEM_PROMPT,
     userPrompt: buildInputContext(input),
-    maxScore: 20,
+    maxScore: 30,
   });
 
   if (aiResult) {
-    const score = Math.min(Math.max(Math.round(aiResult.score), 0), 20);
-    const percentage = (score / 20) * 100;
+    let score = Math.round(aiResult.score);
+    if (aiResult.subscores) {
+      const subTotal = Object.values(aiResult.subscores).reduce((a, b) => a + b, 0);
+      score = Math.round(subTotal);
+    }
+    score = Math.min(Math.max(score, 0), 30);
+    const percentage = (score / 30) * 100;
     const grade = percentage >= 90 ? 'A' : percentage >= 75 ? 'B' : percentage >= 60 ? 'C' : percentage >= 40 ? 'D' : 'F';
     return {
       score,
-      maxScore: 20,
+      maxScore: 30,
       grade,
       analysis: aiResult.analysis,
       strengths: aiResult.strengths,
@@ -34,62 +39,68 @@ function evaluateMarketFallback(input: EvaluationInput): ScoreResult {
   if (input.type === 'github' && input.repoAnalysis) {
     const repo = input.repoAnalysis;
 
-    // Market size indicators (5pts)
-    if (repo.stars > 100) { score += 5; strengths.push(`높은 관심도 (${repo.stars} stars)`); }
-    else if (repo.stars > 20) { score += 3; strengths.push(`성장 중인 관심도 (${repo.stars} stars)`); }
-    else if (repo.stars > 0) { score += 1; }
-    else { improvements.push('스타 수가 적음 - 홍보 전략 필요'); }
+    // Problem definition (5pts)
+    const hasUniqueValue = repo.readme.toLowerCase().match(/(unique|novel|first|unlike|better than|alternative|innovation|revolutionary)/);
+    if (hasUniqueValue) { score += 3; strengths.push('Differentiating value proposition stated in README'); }
+    else { score += 1; }
+    if (repo.description && repo.description.length > 30) { score += 2; }
 
-    // Competition & differentiation (5pts)
+    // Competitive differentiation (5pts)
     if (repo.topics.length > 3) {
       score += 3;
-      strengths.push(`명확한 카테고리화 (${repo.topics.join(', ')})`);
+      strengths.push(`Clear categorization (${repo.topics.join(', ')})`);
     } else if (repo.topics.length > 0) { score += 1; }
-    else { improvements.push('토픽/태그 추가로 검색성 향상'); }
-
-    const hasUniqueValue = repo.readme.toLowerCase().match(/(unique|novel|first|unlike|better than|대체|혁신|최초)/);
-    if (hasUniqueValue) { score += 2; strengths.push('차별화 포인트가 README에 명시됨'); }
-
-    // PMF indicators (5pts)
-    if (repo.forks > 20) { score += 3; strengths.push(`활발한 포크 활동 (${repo.forks})`); }
-    else if (repo.forks > 5) { score += 2; }
-    else { score += 1; }
-
-    if (repo.openIssues > 5) { score += 2; strengths.push('활발한 이슈 활동 - 사용자 피드백 존재'); }
+    else { improvements.push('Add topics/tags to improve discoverability'); }
+    if (hasUniqueValue) { score += 2; }
 
     // Traction (5pts)
-    if (repo.recentCommitCount > 20) { score += 3; strengths.push('활발한 개발 활동'); }
+    if (repo.stars > 100) { score += 5; strengths.push(`High interest level (${repo.stars} stars)`); }
+    else if (repo.stars > 20) { score += 3; strengths.push(`Growing interest (${repo.stars} stars)`); }
+    else if (repo.stars > 0) { score += 1; }
+    else { improvements.push('Low star count - a promotion strategy is needed'); }
+
+    // PMF signals (5pts)
+    if (repo.forks > 20) { score += 3; strengths.push(`Active fork activity (${repo.forks})`); }
+    else if (repo.forks > 5) { score += 2; }
+    else { score += 1; }
+    if (repo.openIssues > 5) { score += 2; strengths.push('Active issue activity - user feedback exists'); }
+
+    // Market size (5pts)
+    score += 3; // Fallback: mid-range estimate
+
+    // Timing (5pts)
+    if (repo.recentCommitCount > 20) { score += 3; strengths.push('Active development activity'); }
     else if (repo.recentCommitCount > 5) { score += 2; }
-    if (repo.forks > 10) { score += 2; }
+    else { score += 1; }
 
   } else {
     const desc = (input.description || '').toLowerCase();
-    const marketKeywords = ['시장', 'market', '사용자', 'user', '고객', 'customer', '수익', 'revenue', 'b2b', 'b2c', 'saas', '구독', 'subscription', '타겟', 'target'];
+    const marketKeywords = ['market', 'user', 'customer', 'revenue', 'b2b', 'b2c', 'saas', 'subscription', 'target', 'audience', 'segment', 'demand'];
     const matched = marketKeywords.filter(k => desc.includes(k));
-    if (matched.length >= 3) { score += 10; strengths.push('시장 관련 용어가 풍부함'); }
-    else if (matched.length >= 1) { score += 5; }
-    else { score += 2; improvements.push('타겟 시장과 사용자층을 구체적으로 명시'); }
+    if (matched.length >= 3) { score += 15; strengths.push('Rich market-related terminology present'); }
+    else if (matched.length >= 1) { score += 8; }
+    else { score += 3; improvements.push('Specify the target market and user base clearly'); }
 
-    const problemKeywords = ['문제', 'problem', '불편', '해결', 'solve', 'pain point'];
+    const problemKeywords = ['problem', 'solve', 'pain point', 'challenge', 'issue', 'solution', 'need'];
     if (problemKeywords.some(k => desc.includes(k))) {
-      score += 5;
-      strengths.push('해결하려는 문제가 명확함');
+      score += 8;
+      strengths.push('Problem to be solved is clearly defined');
     } else {
-      improvements.push('어떤 문제를 해결하는지 명시');
+      improvements.push('Specify what problem this project solves');
     }
 
-    score += 5;
+    score += 7;
   }
 
-  score = Math.min(score, 20);
-  const percentage = (score / 20) * 100;
+  score = Math.min(score, 30);
+  const percentage = (score / 30) * 100;
   const grade = percentage >= 90 ? 'A' : percentage >= 75 ? 'B' : percentage >= 60 ? 'C' : percentage >= 40 ? 'D' : 'F';
 
   return {
     score,
-    maxScore: 20,
+    maxScore: 30,
     grade,
-    analysis: `시장성 분석 완료. 점수: ${score}/20`,
+    analysis: `Market analysis complete. Score: ${score}/30`,
     strengths,
     improvements,
   };

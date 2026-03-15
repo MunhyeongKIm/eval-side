@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Badge from './Badge';
+import { calculateDollarValue, formatDollarValue } from '@/lib/valuation';
 
 interface ProjectCardProps {
   id: string;
@@ -21,10 +22,15 @@ export default function ProjectCard({ id, name, description, type, status, githu
       </div>
       {description && <p className="text-sm text-gray-400 mb-3 line-clamp-2">{description}</p>}
       <div className="flex items-center gap-3 text-xs text-gray-500">
-        <span>{type === 'github' ? 'GitHub' : '개념'}</span>
+        <span>{type === 'github' ? 'GitHub' : 'Concept'}</span>
         {githubUrl && <span className="truncate max-w-[200px]">{githubUrl}</span>}
         {totalScore !== null && totalScore !== undefined && (
-          <span className="ml-auto text-white font-medium">{totalScore}/100</span>
+          <>
+            <span className="ml-auto text-green-400 font-medium text-sm">
+              {formatDollarValue(calculateDollarValue(totalScore))}
+            </span>
+            <span className="text-white font-medium">{totalScore}/100</span>
+          </>
         )}
       </div>
     </Link>

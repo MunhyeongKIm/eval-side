@@ -26,7 +26,7 @@ export default function EvalSection({ title, score, maxScore, analysis }: EvalSe
       </button>
       {open && (
         <div className="px-4 py-3 bg-gray-950 text-sm text-gray-300 whitespace-pre-wrap">
-          {analysis || '분석 결과가 없습니다.'}
+          {analysis || 'No analysis available.'}
         </div>
       )}
     </div>

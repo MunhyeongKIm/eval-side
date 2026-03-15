@@ -18,7 +18,7 @@ export interface RepoAnalysis {
   lastCommitDate: string | null;
   createdAt: string;
   updatedAt: string;
-  // AI 분석 강화 필드
+  // Enhanced AI analysis fields
   languages?: Record<string, number>;
   hasTypeScript?: boolean;
   hasLinting?: boolean;
@@ -53,4 +53,5 @@ export interface EvaluationReport {
   growth: ScoreResult;
   risk: ScoreResult;
   topImprovements: string[];
+  confidence?: 'high' | 'medium' | 'low';
 }

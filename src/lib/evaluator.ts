@@ -1,4 +1,4 @@
-import { EvaluationInput, EvaluationReport } from './types';
+import { EvaluationInput, EvaluationReport, ScoreResult } from './types';
 import { evaluateTech } from './evaluators/tech-evaluator';
 import { evaluateMarket } from './evaluators/market-evaluator';
 import { evaluateUX } from './evaluators/ux-evaluator';
@@ -7,6 +7,52 @@ import { evaluateGrowth } from './evaluators/growth-evaluator';
 import { evaluateRisk } from './evaluators/risk-evaluator';
 import { callAISummary } from './ai-client';
 import { SUMMARY_SYSTEM_PROMPT } from './ai-prompts';
+
+function applyConsistencyAdjustments(results: {
+  tech: ScoreResult;
+  market: ScoreResult;
+  ux: ScoreResult;
+  feasibility: ScoreResult;
+  growth: ScoreResult;
+  risk: ScoreResult;
+}): void {
+  const { tech, market, feasibility, growth, risk } = results;
+
+  const pct = (r: ScoreResult) => r.score / r.maxScore;
+
+  // tech < 30% && feasibility > 70% → cap feasibility at 50%
+  if (pct(tech) < 0.3 && pct(feasibility) > 0.7) {
+    feasibility.score = Math.min(feasibility.score, Math.round(feasibility.maxScore * 0.5));
+  }
+
+  // market < 30% && growth > 70% → cap growth at 50%
+  if (pct(market) < 0.3 && pct(growth) > 0.7) {
+    growth.score = Math.min(growth.score, Math.round(growth.maxScore * 0.5));
+  }
+
+  // risk < 30% && average of remaining 5 > 70%
+  if (pct(risk) < 0.3) {
+    const others = [tech, market, results.ux, feasibility, growth];
+    const avgPct = others.reduce((sum, r) => sum + pct(r), 0) / others.length;
+    if (avgPct > 0.7) {
+      // Deduct 10% from the highest-scoring of the remaining 5
+      const highest = others.reduce((max, r) => pct(r) > pct(max) ? r : max, others[0]);
+      highest.score = Math.max(0, highest.score - Math.round(highest.maxScore * 0.1));
+    }
+  }
+
+  // Recalculate grades
+  for (const r of [tech, market, results.ux, feasibility, growth, risk]) {
+    const percentage = (r.score / r.maxScore) * 100;
+    r.grade = percentage >= 90 ? 'A' : percentage >= 75 ? 'B' : percentage >= 60 ? 'C' : percentage >= 40 ? 'D' : 'F';
+  }
+}
+
+function determineConfidence(input: EvaluationInput, aiSuccessCount: number): 'high' | 'medium' | 'low' {
+  if (input.type === 'concept') return 'low';
+  if (input.type === 'github' && input.repoAnalysis && aiSuccessCount === 6) return 'high';
+  return 'medium';
+}
 
 export async function evaluateProject(input: EvaluationInput): Promise<EvaluationReport> {
   // Run all 6 evaluations in parallel
@@ -19,6 +65,9 @@ export async function evaluateProject(input: EvaluationInput): Promise<Evaluatio
     evaluateRisk(input),
   ]);
 
+  // Cross-consistency validation
+  applyConsistencyAdjustments({ tech, market, ux, feasibility, growth, risk });
+
   const totalScore = tech.score + market.score + ux.score + feasibility.score + growth.score + risk.score;
 
   // Determine verdict
@@ -28,6 +77,17 @@ export async function evaluateProject(input: EvaluationInput): Promise<Evaluatio
   else if (totalScore >= 35) verdict = 'NEEDS_WORK';
   else verdict = 'FAIL';
 
+  // Floor penalty: any area below 25% of maxScore prevents PASS
+  const allScores = [tech, market, ux, feasibility, growth, risk];
+  const hasFloor = allScores.some(s => s.score / s.maxScore < 0.25);
+  if (hasFloor && verdict === 'PASS') {
+    verdict = 'CONDITIONAL_PASS';
+  }
+
+  // Confidence calculation (AI success inferred from analysis length - fallbacks are short)
+  const aiSuccessCount = allScores.filter(s => s.analysis.length > 100).length;
+  const confidence = determineConfidence(input, aiSuccessCount);
+
   // Generate summary
   const allStrengths = [...tech.strengths, ...market.strengths, ...ux.strengths, ...feasibility.strengths, ...growth.strengths, ...risk.strengths];
   const allImprovements = [...tech.improvements, ...market.improvements, ...ux.improvements, ...feasibility.improvements, ...growth.improvements, ...risk.improvements];
@@ -35,21 +95,21 @@ export async function evaluateProject(input: EvaluationInput): Promise<Evaluatio
   // Try AI summary
   let summary: string | null = null;
   try {
-    const summaryInput = `프로젝트: ${input.name}
-총점: ${totalScore}/100 (${verdict})
+    const summaryInput = `Project: ${input.name}
+Total Score: ${totalScore}/100 (${verdict})
 
-## 개별 평가 결과
-- 기술 완성도: ${tech.score}/${tech.maxScore} (${tech.grade}) - ${tech.analysis.slice(0, 200)}
-- 시장 적합성: ${market.score}/${market.maxScore} (${market.grade}) - ${market.analysis.slice(0, 200)}
-- 사용자 경험: ${ux.score}/${ux.maxScore} (${ux.grade}) - ${ux.analysis.slice(0, 200)}
-- 실현 가능성: ${feasibility.score}/${feasibility.maxScore} (${feasibility.grade}) - ${feasibility.analysis.slice(0, 200)}
-- 성장 잠재력: ${growth.score}/${growth.maxScore} (${growth.grade}) - ${growth.analysis.slice(0, 200)}
-- 리스크 관리: ${risk.score}/${risk.maxScore} (${risk.grade}) - ${risk.analysis.slice(0, 200)}
+## Individual Evaluation Results
+- Technical Completeness: ${tech.score}/${tech.maxScore} (${tech.grade}) - ${tech.analysis.slice(0, 200)}
+- Market Fit: ${market.score}/${market.maxScore} (${market.grade}) - ${market.analysis.slice(0, 200)}
+- User Experience: ${ux.score}/${ux.maxScore} (${ux.grade}) - ${ux.analysis.slice(0, 200)}
+- Feasibility: ${feasibility.score}/${feasibility.maxScore} (${feasibility.grade}) - ${feasibility.analysis.slice(0, 200)}
+- Growth Potential: ${growth.score}/${growth.maxScore} (${growth.grade}) - ${growth.analysis.slice(0, 200)}
+- Risk Management: ${risk.score}/${risk.maxScore} (${risk.grade}) - ${risk.analysis.slice(0, 200)}
 
-## 주요 강점
+## Key Strengths
 ${allStrengths.slice(0, 5).map(s => `- ${s}`).join('\n')}
 
-## 주요 개선점
+## Key Improvements
 ${allImprovements.slice(0, 5).map(i => `- ${i}`).join('\n')}`;
 
     summary = await callAISummary(SUMMARY_SYSTEM_PROMPT, summaryInput);
@@ -59,9 +119,9 @@ ${allImprovements.slice(0, 5).map(i => `- ${i}`).join('\n')}`;
 
   // Fallback summary
   if (!summary) {
-    summary = `프로젝트 "${input.name}"의 종합 평가 결과: ${totalScore}/100점 (${verdict}).
-주요 강점: ${allStrengths.slice(0, 3).join(', ') || '특이사항 없음'}.
-주요 개선점: ${allImprovements.slice(0, 3).join(', ') || '특이사항 없음'}.`;
+    summary = `Overall evaluation for "${input.name}": ${totalScore}/100 (${verdict}).
+Key strengths: ${allStrengths.slice(0, 3).join(', ') || 'None noted'}.
+Key improvements: ${allImprovements.slice(0, 3).join(', ') || 'None noted'}.`;
   }
 
   return {
@@ -75,5 +135,6 @@ ${allImprovements.slice(0, 5).map(i => `- ${i}`).join('\n')}`;
     growth,
     risk,
     topImprovements: allImprovements.slice(0, 3),
+    confidence,
   };
 }

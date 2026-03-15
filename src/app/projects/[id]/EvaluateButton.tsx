@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/components/Toast';
 
 export default function EvaluateButton({ projectId }: { projectId: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { showToast } = useToast();
 
   const handleEvaluate = async () => {
     setLoading(true);
@@ -13,7 +15,7 @@ export default function EvaluateButton({ projectId }: { projectId: string }) {
       await fetch(`/api/projects/${projectId}/evaluate`, { method: 'POST' });
       router.refresh();
     } catch {
-      alert('평가 시작에 실패했습니다.');
+      showToast('Failed to start evaluation.', 'error');
     } finally {
       setLoading(false);
     }
@@ -23,9 +25,10 @@ export default function EvaluateButton({ projectId }: { projectId: string }) {
     <button
       onClick={handleEvaluate}
       disabled={loading}
+      aria-label="Run AI evaluation"
       className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 text-white font-medium rounded-lg transition"
     >
-      {loading ? '평가 시작 중...' : '평가 실행'}
+      {loading ? 'Starting Evaluation...' : 'Run Evaluation'}
     </button>
   );
 }
