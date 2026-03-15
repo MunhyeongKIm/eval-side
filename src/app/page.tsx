@@ -24,119 +24,106 @@ export default async function Home() {
   const completedProjects = await prisma.project.count({ where: { status: 'completed' } });
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-16">
       {/* Hero Section */}
-      <section className="text-center pt-12 pb-8 animate-fade-in">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-6">
-          <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-          AI-Powered Multi-Agent Analysis
-        </div>
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
-          Evaluate Your
-          <span className="text-gradient block sm:inline"> Side Project</span>
-        </h1>
-        <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
-          Get an instant AI-powered evaluation of your side project. Our 6 specialized agents analyze
-          technical quality, market fit, UX, feasibility, growth potential, and risk — delivering a
-          score, dollar valuation, and actionable roadmap.
-        </p>
+      <section className="text-center pt-16 pb-8 animate-fade-in hero-gradient relative">
+        <div className="relative z-10">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+            AI-Powered Multi-Agent Analysis
+          </div>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-5 tracking-tight">
+            Evaluate Your
+            <span className="text-gradient block sm:inline"> Side Project</span>
+          </h1>
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed mb-10">
+            Get an instant AI-powered evaluation of your side project. Our 6 specialized agents
+            deliver a score, dollar valuation, and actionable roadmap.
+          </p>
 
-        {/* Stats */}
-        <div className="flex items-center justify-center gap-8 mt-8">
-          <div className="text-center">
-            <p className="text-2xl font-bold text-white">{totalProjects}</p>
-            <p className="text-xs text-gray-500">Projects Submitted</p>
-          </div>
-          <div className="w-px h-8 bg-gray-800" />
-          <div className="text-center">
-            <p className="text-2xl font-bold text-white">{completedProjects}</p>
-            <p className="text-xs text-gray-500">Evaluations Done</p>
-          </div>
-          <div className="w-px h-8 bg-gray-800" />
-          <div className="text-center">
-            <p className="text-2xl font-bold text-white">6</p>
-            <p className="text-xs text-gray-500">AI Agents</p>
+          {/* Stats */}
+          <div className="inline-flex items-center gap-6 sm:gap-10 px-6 py-3 rounded-2xl bg-gray-900/50 border border-gray-800/50">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-white">{totalProjects}</p>
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider">Projects</p>
+            </div>
+            <div className="w-px h-8 bg-gray-800" />
+            <div className="text-center">
+              <p className="text-2xl font-bold text-white">{completedProjects}</p>
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider">Evaluated</p>
+            </div>
+            <div className="w-px h-8 bg-gray-800" />
+            <div className="text-center">
+              <p className="text-2xl font-bold text-white">6</p>
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider">AI Agents</p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* How It Works */}
-      <section className="space-y-8 animate-fade-in-delay-1">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-white mb-2">How It Works</h2>
-          <p className="text-sm text-gray-500">Three steps to a comprehensive evaluation</p>
+      <section className="animate-fade-in-delay-1">
+        <div className="text-center mb-8">
+          <p className="text-xs font-medium text-blue-400 uppercase tracking-widest mb-2">Simple Process</p>
+          <h2 className="text-2xl font-bold text-white">How It Works</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Step 1: Submit */}
-          <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 text-center">
-            <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center mx-auto mb-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+          {/* Connector lines (desktop only) */}
+          <div className="hidden md:block absolute top-12 left-[calc(33.33%-12px)] w-[calc(33.33%+24px)] h-px bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-green-500/20" />
+          <div className="hidden md:block absolute top-12 right-[calc(33.33%-12px)] w-[calc(33.33%+24px)] h-px bg-gradient-to-r from-purple-500/20 via-green-500/20 to-green-500/10" />
+
+          {/* Step 1 */}
+          <div className="bg-gray-900/80 rounded-xl p-6 border border-gray-800 text-center relative">
+            <div className="w-10 h-10 rounded-full bg-blue-500/15 border border-blue-500/20 flex items-center justify-center mx-auto mb-4">
               <span className="text-blue-400 font-bold text-sm">1</span>
             </div>
-            <div className="flex justify-center mb-3">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-blue-400">
-                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
-              </svg>
-            </div>
-            <h3 className="font-semibold text-white mb-1">Submit Your Project</h3>
-            <p className="text-xs text-gray-500">Paste a GitHub URL or describe your concept in plain text</p>
+            <h3 className="font-semibold text-white mb-1.5">Submit Your Project</h3>
+            <p className="text-sm text-gray-500 leading-relaxed">Paste a GitHub URL or describe your project concept in plain text</p>
           </div>
 
-          {/* Step 2: Analysis */}
-          <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 text-center">
-            <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center mx-auto mb-3">
+          {/* Step 2 */}
+          <div className="bg-gray-900/80 rounded-xl p-6 border border-gray-800 text-center relative">
+            <div className="w-10 h-10 rounded-full bg-purple-500/15 border border-purple-500/20 flex items-center justify-center mx-auto mb-4">
               <span className="text-purple-400 font-bold text-sm">2</span>
             </div>
-            <div className="flex justify-center mb-3">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-purple-400">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 8v4l3 3" />
-              </svg>
-            </div>
-            <h3 className="font-semibold text-white mb-1">6 AI Agents Analyze</h3>
-            <p className="text-xs text-gray-500 mb-3">Parallel evaluation from specialized perspectives</p>
+            <h3 className="font-semibold text-white mb-1.5">6 AI Agents Analyze</h3>
+            <p className="text-sm text-gray-500 mb-3">Parallel evaluation across all dimensions</p>
             <div className="flex flex-wrap justify-center gap-1.5">
               {[
-                { label: 'Technical', color: 'text-blue-400' },
-                { label: 'Market', color: 'text-green-400' },
-                { label: 'UX', color: 'text-pink-400' },
-                { label: 'Feasibility', color: 'text-yellow-400' },
-                { label: 'Growth', color: 'text-purple-400' },
-                { label: 'Risk', color: 'text-red-400' },
+                { label: 'Technical', color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' },
+                { label: 'Market', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' },
+                { label: 'UX', color: 'text-pink-400 bg-pink-500/10 border-pink-500/20' },
+                { label: 'Feasibility', color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' },
+                { label: 'Growth', color: 'text-violet-400 bg-violet-500/10 border-violet-500/20' },
+                { label: 'Risk', color: 'text-red-400 bg-red-500/10 border-red-500/20' },
               ].map(({ label, color }) => (
-                <span
-                  key={label}
-                  className={`px-2 py-0.5 text-[10px] rounded-full bg-gray-800 border border-gray-700/50 ${color}`}
-                >
+                <span key={label} className={`px-2 py-0.5 text-[10px] font-medium rounded-full border ${color}`}>
                   {label}
                 </span>
               ))}
             </div>
           </div>
 
-          {/* Step 3: Report */}
-          <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 text-center">
-            <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-3">
+          {/* Step 3 */}
+          <div className="bg-gray-900/80 rounded-xl p-6 border border-gray-800 text-center relative">
+            <div className="w-10 h-10 rounded-full bg-green-500/15 border border-green-500/20 flex items-center justify-center mx-auto mb-4">
               <span className="text-green-400 font-bold text-sm">3</span>
             </div>
-            <div className="flex justify-center mb-3">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-green-400">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-                <line x1="16" y1="13" x2="8" y2="13" />
-                <line x1="16" y1="17" x2="8" y2="17" />
-                <polyline points="10 9 9 9 8 9" />
-              </svg>
-            </div>
-            <h3 className="font-semibold text-white mb-1">Get Your Report</h3>
-            <p className="text-xs text-gray-500">Score out of 100, dollar valuation estimate, and actionable insights</p>
+            <h3 className="font-semibold text-white mb-1.5">Get Your Report</h3>
+            <p className="text-sm text-gray-500 leading-relaxed">Score out of 100, dollar valuation, comparable cases, and improvement roadmap</p>
           </div>
         </div>
       </section>
 
+      {/* Submit Form */}
+      <section className="animate-fade-in-delay-2">
+        <SubmitForm />
+      </section>
+
       {/* Top Projects */}
       {topProjects.length > 0 && (
-        <section className="space-y-5 animate-fade-in-delay-1">
+        <section className="space-y-5 animate-fade-in-delay-2">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-white">Top Rated Projects</h2>
             <Link href="/leaderboard" className="text-sm text-gray-400 hover:text-white transition flex items-center gap-1">
@@ -177,38 +164,61 @@ export default async function Home() {
         </section>
       )}
 
-      {/* Main Content: Form + Recent Projects (stacked) */}
-      <div className="space-y-8 animate-fade-in-delay-2">
-        <SubmitForm />
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white">Recent Projects</h2>
-            <span className="text-xs text-gray-600">{projects.length} shown</span>
-          </div>
-          {projects.length === 0 ? (
-            <div className="bg-gray-900/50 rounded-xl p-12 border border-dashed border-gray-800 text-center">
-              <p className="text-gray-500 mb-2">No projects submitted yet</p>
-              <p className="text-sm text-gray-600">Be the first to submit a project for evaluation!</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {projects.map((p) => (
-                <ProjectCard
-                  key={p.id}
-                  id={p.id}
-                  name={p.name}
-                  description={p.description}
-                  type={p.type}
-                  status={p.status}
-                  githubUrl={p.githubUrl}
-                  totalScore={p.evaluation?.totalScore}
-                  verdict={p.evaluation?.verdict}
-                />
-              ))}
-            </div>
-          )}
+      {/* Recent Projects */}
+      <section className="space-y-4 animate-fade-in-delay-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-white">Recent Projects</h2>
+          <span className="text-xs text-gray-600">{projects.length} shown</span>
         </div>
-      </div>
+        {projects.length === 0 ? (
+          <div className="bg-gray-900/50 rounded-xl p-12 border border-dashed border-gray-800 text-center">
+            <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center mx-auto mb-4">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="1.5">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </div>
+            <p className="text-gray-500 mb-1">No projects submitted yet</p>
+            <p className="text-sm text-gray-600">Be the first to submit a project for evaluation!</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {projects.map((p) => (
+              <ProjectCard
+                key={p.id}
+                id={p.id}
+                name={p.name}
+                description={p.description}
+                type={p.type}
+                status={p.status}
+                githubUrl={p.githubUrl}
+                totalScore={p.evaluation?.totalScore}
+                verdict={p.evaluation?.verdict}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Bottom CTA */}
+      <section className="text-center py-12 border-t border-gray-800/50 animate-fade-in-delay-3">
+        <p className="text-sm text-gray-500 mb-3">Built for indie hackers, solo founders, and side project builders</p>
+        <div className="flex items-center justify-center gap-4 text-xs text-gray-600">
+          <span className="flex items-center gap-1.5">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M13.5 2.5l-11 11M2.5 2.5h11v11" /></svg>
+            Open source
+          </span>
+          <span className="text-gray-800">|</span>
+          <span className="flex items-center gap-1.5">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="8" cy="8" r="6" /><path d="M8 5v3l2 2" /></svg>
+            Results in ~30 seconds
+          </span>
+          <span className="text-gray-800">|</span>
+          <span className="flex items-center gap-1.5">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 8h12M6 4l-4 4 4 4" /></svg>
+            No sign-up required
+          </span>
+        </div>
+      </section>
     </div>
   );
 }
