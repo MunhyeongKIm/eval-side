@@ -166,11 +166,11 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
 
             {/* Score bars */}
             <div className="space-y-3">
-              <ScoreBar label="Technical Completeness" score={eval_.techScore || 0} maxScore={10} />
-              <ScoreBar label="Market Fit" score={eval_.marketScore || 0} maxScore={30} />
-              <ScoreBar label="User Experience" score={eval_.uxScore || 0} maxScore={10} />
-              <ScoreBar label="Feasibility" score={eval_.feasibilityScore || 0} maxScore={10} />
-              <ScoreBar label="Growth Potential" score={eval_.growthScore || 0} maxScore={25} />
+              <ScoreBar label="Technical Completeness" score={eval_.techScore || 0} maxScore={20} />
+              <ScoreBar label="Market Fit" score={eval_.marketScore || 0} maxScore={20} />
+              <ScoreBar label="User Experience" score={eval_.uxScore || 0} maxScore={15} />
+              <ScoreBar label="Feasibility" score={eval_.feasibilityScore || 0} maxScore={15} />
+              <ScoreBar label="Growth Potential" score={eval_.growthScore || 0} maxScore={15} />
               <ScoreBar label="Risk Management" score={eval_.riskScore || 0} maxScore={15} />
             </div>
           </div>
@@ -242,11 +242,11 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           {/* Detailed Analysis */}
           <div className="space-y-2">
             <h2 className="font-semibold text-white text-sm uppercase tracking-wider text-gray-400">Detailed Analysis</h2>
-            <EvalSection title="Technical Completeness" score={eval_.techScore || 0} maxScore={10} analysis={eval_.techAnalysis} />
-            <EvalSection title="Market Fit" score={eval_.marketScore || 0} maxScore={30} analysis={eval_.marketAnalysis} />
-            <EvalSection title="User Experience" score={eval_.uxScore || 0} maxScore={10} analysis={eval_.uxAnalysis} />
-            <EvalSection title="Feasibility" score={eval_.feasibilityScore || 0} maxScore={10} analysis={eval_.feasibilityAnalysis} />
-            <EvalSection title="Growth Potential" score={eval_.growthScore || 0} maxScore={25} analysis={eval_.growthAnalysis} />
+            <EvalSection title="Technical Completeness" score={eval_.techScore || 0} maxScore={20} analysis={eval_.techAnalysis} />
+            <EvalSection title="Market Fit" score={eval_.marketScore || 0} maxScore={20} analysis={eval_.marketAnalysis} />
+            <EvalSection title="User Experience" score={eval_.uxScore || 0} maxScore={15} analysis={eval_.uxAnalysis} />
+            <EvalSection title="Feasibility" score={eval_.feasibilityScore || 0} maxScore={15} analysis={eval_.feasibilityAnalysis} />
+            <EvalSection title="Growth Potential" score={eval_.growthScore || 0} maxScore={15} analysis={eval_.growthAnalysis} />
             <EvalSection title="Risk Management" score={eval_.riskScore || 0} maxScore={15} analysis={eval_.riskAnalysis} />
           </div>
         </>

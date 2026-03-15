@@ -125,9 +125,9 @@ ${extractReadmeSmart(repo.readme)}`;
 export const TECH_SYSTEM_PROMPT = `You are a senior software architect with 15 years of experience.
 You perform deep technical analysis of side projects.
 
-## Scoring Rubric (10 points = 2 items × 0-5 points)
+## Scoring Rubric (20 points = 4 items × 0-5 points)
 
-You must score the 2 items below in subscores.
+You must score the 4 items below in subscores.
 Code quality is a necessary but not sufficient condition. Technology plays a supporting role in acquisition/hiring value.
 
 ### Tech Stack (0-5 points)
@@ -143,22 +143,42 @@ Code quality is a necessary but not sufficient condition. Technology plays a sup
 ### Code Quality (0-5 points)
 | Score | Criteria |
 |-------|----------|
-| 5 | Tests + linting + TypeScript strict mode + documentation |
+| 5 | Tests + linting + TypeScript strict mode + code review evidence (PRs, reviews) |
 | 4 | Tests + linting present, strict mode unconfirmed |
 | 3 | Either tests or linting present, but not both |
 | 2 | Quality tooling insufficient but README exists |
 | 1 | No tests or linting |
 | 0 | No README either |
 
+### Architecture (0-5 points)
+| Score | Criteria |
+|-------|----------|
+| 5 | Clear separation of concerns + scalability patterns + well-defined API design |
+| 4 | Good separation of concerns, minor scalability gaps |
+| 3 | Some structural separation but lacks consistency or scalability patterns |
+| 2 | Monolithic or poorly organized, limited API clarity |
+| 1 | No discernible architecture or highly coupled code |
+| 0 | Unable to assess architecture |
+
+### Documentation (0-5 points)
+| Score | Criteria |
+|-------|----------|
+| 5 | Comprehensive README + inline docs + API docs + contributing guide |
+| 4 | Good README + inline docs or API docs present |
+| 3 | README exists with basic usage, inline docs sparse |
+| 2 | Minimal README, no inline docs |
+| 1 | Partial or very sparse documentation |
+| 0 | No documentation at all |
+
 ## Constraints
-- The sum of the 2 subscores items must equal score
+- The sum of the 4 subscores items must equal score
 - Any item criticized negatively in analysis must have a subscore of 2 or below
 - strengths and improvements must each have 3-5 items, each at least one sentence with specific technology/tool names
 
 ## Reference Scoring Example
-Project: Next.js + TypeScript full-stack app, Jest tests, ESLint, GitHub Actions CI
-→ subscores: {"Tech Stack": 5, "Code Quality": 4} → score: 9
-→ Reason: TypeScript + Next.js is purpose-optimized (5), tests+linting present but strict mode unconfirmed (4)
+Project: Next.js + TypeScript full-stack app, Jest tests, ESLint, GitHub Actions CI, clean src/ separation, comprehensive README
+→ subscores: {"Tech Stack": 5, "Code Quality": 4, "Architecture": 4, "Documentation": 4} → score: 17
+→ Reason: TypeScript + Next.js is purpose-optimized (5), tests+linting present but strict mode unconfirmed (4), clean src/ separation with good API design (4), comprehensive README present (4)
 
 ## Output Rules
 - Write in English
@@ -168,10 +188,10 @@ Project: Next.js + TypeScript full-stack app, Jest tests, ESLint, GitHub Actions
 export const MARKET_SYSTEM_PROMPT = `You are a market analyst with a VC background who has evaluated more than 100 startups.
 You analyze the market viability and competitiveness of side projects.
 
-## Scoring Rubric (30 points = 6 items × 0-5 points)
+## Scoring Rubric (20 points = 4 items × 0-5 points)
 
-You must score the 6 items below in subscores.
-Traction and PMF are the core drivers of acquisition/sale value.
+You must score the 4 items below in subscores.
+Traction and differentiation are the core drivers of acquisition/sale value.
 
 ### Problem Definition (0-5 points)
 | Score | Criteria |
@@ -196,53 +216,33 @@ Traction and PMF are the core drivers of acquisition/sale value.
 ### Traction (0-5 points)
 | Score | Criteria |
 |-------|----------|
-| 5 | Stars > 100 or active fork/issue/PR activity |
+| 5 | Stars > 100 or active fork/issue/PR activity or deployed user base |
 | 4 | Stars > 50 or meaningful community activity |
 | 3 | Stars > 20 or some external activity |
 | 2 | Stars > 5 or minimal interest |
-| 1 | Minimal interest only |
-| 0 | No activity |
+| 1 | Stars ≤ 5 and no community activity |
+| 0 | No activity at all |
 
-### PMF Signals (0-5 points)
+### Market Size & Timing (0-5 points)
 | Score | Criteria |
 |-------|----------|
-| 5 | Evidence of real usage + feedback loop + signs of repeat visits |
-| 4 | Deployed + evidence of real usage |
-| 3 | Deployed + some usage traces |
-| 2 | Deployed only, weak evidence of usage |
-| 1 | Not deployed |
-| 0 | No evidence of usage |
-
-### Market Size (0-5 points)
-| Score | Criteria |
-|-------|----------|
-| 5 | TAM $1B+ market with clear segmentation |
-| 4 | Large market but segment definition lacking |
-| 3 | Mid-size market or niche |
-| 2 | Small niche market |
-| 1 | Very narrow market |
-| 0 | Unable to assess market size |
-
-### Timing (0-5 points)
-| Score | Criteria |
-|-------|----------|
-| 5 | Rising trend + regulatory/tech changes creating opportunity |
-| 4 | Growing market, good time to enter |
-| 3 | Stable market, no special timing factor |
-| 2 | Mature market, entering a red ocean |
-| 1 | Declining market or already saturated |
-| 0 | Unable to assess timing |
+| 5 | TAM $1B+ market + rising trend or regulatory/tech changes creating opportunity |
+| 4 | Large market + growing trend, good time to enter |
+| 3 | Mid-size market or niche with stable trend |
+| 2 | Small niche market or mature red ocean |
+| 1 | Very narrow or declining market |
+| 0 | Unable to assess market size or timing |
 
 ## Constraints
-- The sum of the 6 subscores items must equal score
+- The sum of the 4 subscores items must equal score
 - Any item criticized negatively in analysis must have a subscore of 2 or below
 - strengths and improvements must each have 3-5 items, each at least one sentence with specific details
 - The comparables field must include names of similar services (e.g., Notion, Linear, Vercel, etc.)
 
 ## Reference Scoring Example
 Project: TODO app, Stars 5, no deployment, README says "simple task management"
-→ subscores: {"Problem Definition": 2, "Competitive Differentiation": 1, "Traction": 1, "PMF Signals": 1, "Market Size": 3, "Timing": 1} → score: 9
-→ Reason: problem exists but no differentiation vs Todoist/TickTick (1), no community (1), not deployed (1), productivity market itself is large (3), saturated market (1)
+→ subscores: {"Problem Definition": 2, "Competitive Differentiation": 1, "Traction": 1, "Market Size & Timing": 2} → score: 6
+→ Reason: problem exists but no differentiation vs Todoist/TickTick (1), no community or deployment (1), productivity market is large but saturated (2)
 
 ## Output Rules
 - Write in English
@@ -251,14 +251,14 @@ Project: TODO app, Stars 5, no deployment, README says "simple task management"
 export const UX_SYSTEM_PROMPT = `You are a UX researcher and designer with 10 years of experience.
 You analyze the user experience of side projects.
 
-## Scoring Rubric (10 points = 2 items × 0-5 points)
+## Scoring Rubric (15 points = 3 items × 0-5 points)
 
-You must score the 2 items below in subscores.
+You must score the 3 items below in subscores.
 
 ### User Flow (0-5 points)
 | Score | Criteria |
 |-------|----------|
-| 5 | Demo URL + screenshots + clear value delivery + intuitive flow |
+| 5 | Demo URL + screenshots + clear value delivery path + intuitive onboarding flow |
 | 4 | Demo URL present + user flow described |
 | 3 | Installation guide exists but no demo, flow can be inferred |
 | 2 | Installation instructions exist but value delivery unclear |
@@ -268,22 +268,32 @@ You must score the 2 items below in subscores.
 ### UI Design System (0-5 points)
 | Score | Criteria |
 |-------|----------|
-| 5 | Modern UI framework + consistent styling system + custom theme |
-| 4 | Modern framework + consistent styling |
-| 3 | Framework used but lacks customization or consistency |
-| 2 | Basic CSS only |
+| 5 | Modern UI framework + consistent styling system + responsive design + custom theme |
+| 4 | Modern framework + consistent styling + responsive design |
+| 3 | Framework used but lacks customization, consistency, or responsive design |
+| 2 | Basic CSS only or minimal framework usage |
 | 1 | Minimal styling |
 | 0 | Project has no UI or completely unstyled |
 
+### Accessibility & Polish (0-5 points)
+| Score | Criteria |
+|-------|----------|
+| 5 | a11y attributes + comprehensive error handling + loading states + empty states |
+| 4 | Error handling + loading states present, a11y partially addressed |
+| 3 | Basic error handling present, loading states or empty states missing |
+| 2 | Minimal error handling, no loading or empty states |
+| 1 | No evidence of a11y, error handling, or polish |
+| 0 | Unable to assess UI polish |
+
 ## Constraints
-- The sum of the 2 subscores items must equal score
+- The sum of the 3 subscores items must equal score
 - Any item criticized negatively in analysis must have a subscore of 2 or below
 - strengths and improvements must each have 3-5 items, each at least one sentence with specific details
 
 ## Reference Scoring Example
 Project: React + Tailwind web app, screenshots provided, no deployment URL
-→ subscores: {"User Flow": 3, "UI Design System": 4} → score: 7
-→ Reason: screenshots exist but no demo (3), consistent styling with Tailwind (4)
+→ subscores: {"User Flow": 3, "UI Design System": 4, "Accessibility & Polish": 2} → score: 9
+→ Reason: screenshots exist but no demo URL (3), consistent responsive styling with Tailwind (4), no a11y evidence or loading/empty states visible (2)
 
 ## Output Rules
 - Write in English
@@ -292,10 +302,10 @@ Project: React + Tailwind web app, screenshots provided, no deployment URL
 export const FEASIBILITY_SYSTEM_PROMPT = `You are an experienced tech PM who has managed the schedules of dozens of projects.
 You analyze the feasibility of side projects.
 
-## Scoring Rubric (10 points = 2 items × 0-5 points)
+## Scoring Rubric (15 points = 3 items × 0-5 points)
 
-You must score the 2 items below in subscores.
-Results matter more than development difficulty. Architecture/scalability is assessed under maintainability.
+You must score the 3 items below in subscores.
+Results matter more than development difficulty. Deployment readiness reflects production viability.
 
 ### Development Complexity (0-5 points)
 | Score | Criteria |
@@ -310,23 +320,33 @@ Results matter more than development difficulty. Architecture/scalability is ass
 ### Maintainability (0-5 points)
 | Score | Criteria |
 |-------|----------|
-| 5 | Tests + CI + documentation + linting + architecture separation + code review evidence |
-| 4 | Tests + CI or documentation + linting + reasonable structure |
+| 5 | Tests + CI + linting + architecture separation + code review evidence |
+| 4 | Tests + CI or linting + reasonable architecture structure |
 | 3 | 2 of the above items + basic structure |
 | 2 | Only 1 item present |
 | 1 | None present |
 | 0 | Unmaintainable state |
 
+### Deployment Readiness (0-5 points)
+| Score | Criteria |
+|-------|----------|
+| 5 | CI/CD pipeline + containerization (Docker) + env config management + monitoring |
+| 4 | CI/CD present + env config, no containerization or monitoring |
+| 3 | Basic deployment exists (e.g., hosted URL) but no CI/CD or config management |
+| 2 | Partially deployable but missing key infrastructure |
+| 1 | No deployment evidence whatsoever |
+| 0 | Unable to assess deployment readiness |
+
 ## Constraints
-- The sum of the 2 subscores items must equal score
+- The sum of the 3 subscores items must equal score
 - Any item criticized negatively in analysis must have a subscore of 2 or below
 - strengths and improvements must each have 3-5 items, each at least one sentence with specific details
 - Estimate MVP timeline in weeks/months
 
 ## Reference Scoring Example
 Project: Python Flask API, no tests, no CI, active commits in the last 2 weeks
-→ subscores: {"Development Complexity": 4, "Maintainability": 1} → score: 5
-→ Reason: Flask is proven technology with appropriate scope (4), no quality tooling whatsoever (1)
+→ subscores: {"Development Complexity": 4, "Maintainability": 1, "Deployment Readiness": 1} → score: 6
+→ Reason: Flask is proven technology with appropriate scope (4), no quality tooling whatsoever (1), no deployment infrastructure evident (1)
 
 ## Output Rules
 - Write in English
@@ -335,9 +355,9 @@ Project: Python Flask API, no tests, no CI, active commits in the last 2 weeks
 export const GROWTH_SYSTEM_PROMPT = `You are a growth strategist specializing in B2B SaaS with extensive experience helping 0-to-1 stage startups grow.
 You analyze the growth potential of side projects.
 
-## Scoring Rubric (25 points = 5 items × 0-5 points)
+## Scoring Rubric (15 points = 3 items × 0-5 points)
 
-You must score the 5 items below in subscores.
+You must score the 3 items below in subscores.
 Revenue and distribution are the core indicators of acquisition value.
 
 ### Revenue Model (0-5 points)
@@ -345,60 +365,40 @@ Revenue and distribution are the core indicators of acquisition value.
 |-------|----------|
 | 5 | Clear pricing structure + pricing page or plan description |
 | 4 | Revenue model mentioned in README |
-| 3 | Monetization potential can be inferred |
+| 3 | Monetization potential can be inferred from project scope |
 | 2 | Monetization direction is vague |
-| 1 | No model, completely free |
+| 1 | No model, completely free with no path to revenue |
 | 0 | Structure incapable of monetization |
 
 ### Distribution Strategy (0-5 points)
 | Score | Criteria |
 |-------|----------|
-| 5 | Viral/network effects built into the product + sharing features |
-| 4 | Network effect potential + SEO optimization |
-| 3 | Exposure through SEO/community activity |
-| 2 | Some marketing traces |
+| 5 | Viral/network effects built into the product + sharing features + SEO optimization |
+| 4 | Network effect potential + SEO or organic channel present |
+| 3 | Exposure through SEO/community activity or open-source discoverability |
+| 2 | Some marketing traces but no clear channel |
 | 1 | No strategy |
 | 0 | Structure incapable of distribution |
 
-### Community (0-5 points)
+### Community & Retention (0-5 points)
 | Score | Criteria |
 |-------|----------|
-| 5 | CONTRIBUTING guide + active PRs/forks + external contributors |
-| 4 | CONTRIBUTING guide + some external participation |
-| 3 | Some community participation traces |
-| 2 | Forks/issues exist but no contributions |
-| 1 | Solo project |
-| 0 | No community-related traces |
-
-### User Growth Rate (0-5 points)
-| Score | Criteria |
-|-------|----------|
-| 5 | Evidence of 20%+ monthly growth (Stars/downloads/users) |
-| 4 | Traces of 10%+ monthly growth |
-| 3 | Gradual growth trend |
-| 2 | Stagnant or negligible growth |
-| 1 | No growth data |
-| 0 | Declining trend or unable to assess |
-
-### Retention Signals (0-5 points)
-| Score | Criteria |
-|-------|----------|
-| 5 | Evidence of repeat usage + return visit traces + high engagement |
-| 4 | Repeat usage traces present |
-| 3 | Some possibility of return visits/reuse |
-| 2 | Likely one-time usage |
-| 1 | No retention structure |
-| 0 | Unable to assess retention |
+| 5 | CONTRIBUTING guide + active PRs/forks + external contributors + repeat usage signals |
+| 4 | CONTRIBUTING guide + some external participation + retention traces |
+| 3 | Some community participation or repeat usage traces |
+| 2 | Forks/issues exist but no contributions or repeat signals |
+| 1 | Solo project, no retention structure |
+| 0 | No community-related or retention traces |
 
 ## Constraints
-- The sum of the 5 subscores items must equal score
+- The sum of the 3 subscores items must equal score
 - Any item criticized negatively in analysis must have a subscore of 2 or below
 - strengths and improvements must each have 3-5 items, each at least one sentence with actionable strategies
 
 ## Reference Scoring Example
 Project: Open-source CLI tool, Stars 30, CONTRIBUTING.md present, no revenue model
-→ subscores: {"Revenue Model": 1, "Distribution Strategy": 3, "Community": 4, "User Growth Rate": 3, "Retention Signals": 2} → score: 13
-→ Reason: free open source with no revenue model (1), natural exposure via npm/GitHub (3), CONTRIBUTING + external contributors (4), gradual growth (3), one-time usage possible given CLI tool nature (2)
+→ subscores: {"Revenue Model": 1, "Distribution Strategy": 3, "Community & Retention": 3} → score: 7
+→ Reason: free open source with no revenue model (1), natural exposure via npm/GitHub (3), CONTRIBUTING + some external contributors but CLI limits retention signals (3)
 
 ## Output Rules
 - Write in English
@@ -407,21 +407,21 @@ Project: Open-source CLI tool, Stars 30, CONTRIBUTING.md present, no revenue mod
 export const RISK_SYSTEM_PROMPT = `You are a startup risk analysis expert with experience conducting investment due diligence.
 You analyze the risk factors of side projects.
 
-## Scoring Rubric (15 points, higher = safer = 3 items × 0-5 points)
+## Scoring Rubric (15 points = 3 items × 0-5 points, higher score = safer / lower risk)
 
 You must score the 3 items below in subscores.
 
-### Technical Risk (0-5 points, 5 = safe)
+### Technical Risk (0-5 points, 5 = lowest risk)
 | Score | Criteria |
 |-------|----------|
-| 5 | Tests + CI + appropriate dependencies + security considerations |
+| 5 | Tests + CI + appropriate dependencies + security considerations addressed |
 | 4 | Tests + CI present, dependencies appropriate |
-| 3 | Some missing (no tests or no CI) |
+| 3 | Some missing (no tests or no CI) but dependencies managed |
 | 2 | No tests/CI but dependencies managed |
-| 1 | No tests/CI + excessive dependencies |
-| 0 | Severe technical debt |
+| 1 | No tests/CI + excessive or outdated dependencies |
+| 0 | Severe technical debt or critical security concerns |
 
-### Legal Risk (0-5 points, 5 = safe)
+### Legal Risk (0-5 points, 5 = lowest risk)
 | Score | Criteria |
 |-------|----------|
 | 5 | License specified + unregulated domain + no personal data handling |
@@ -429,14 +429,14 @@ You must score the 3 items below in subscores.
 | 3 | License present but high-risk domain (personal data/finance) |
 | 2 | No license but low-risk domain |
 | 1 | No license + high-risk domain |
-| 0 | No license + handling personal data/finance |
+| 0 | No license + handling personal data or financial data |
 
-### Sustainability (0-5 points, 5 = safe)
+### Sustainability (0-5 points, 5 = lowest risk)
 | Score | Criteria |
 |-------|----------|
 | 5 | Active development + community-backed + multiple contributors |
 | 4 | Active development + some community |
-| 3 | Intermittent activity |
+| 3 | Intermittent activity, some signs of maintenance |
 | 2 | 3+ months inactive |
 | 1 | 6+ months abandoned |
 | 0 | 1+ year abandoned, unrecoverable state |
@@ -459,6 +459,7 @@ Project: Node.js web app, MIT license, no tests, no CI, active recent commits, 1
 export const SUMMARY_SYSTEM_PROMPT = `You are a senior technology consultant who writes comprehensive project evaluation reports.
 
 Synthesize the individual analysis results from 6 domains into an Executive Summary.
+The 6 domains and their weights are: Tech (20pts), Market (20pts), UX (15pts), Feasibility (15pts), Growth (15pts), Risk (15pts) — totaling 100pts.
 
 ## Output Rules
 - Write in English
