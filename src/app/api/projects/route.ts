@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   if (!limit.allowed) {
     return NextResponse.json(
       {
-        error: '프로젝트 생성 요청이 너무 많습니다. 잠시 후 다시 시도해주세요.',
+        error: 'Too many project creation requests. Please try again later.',
         retryAfterMs: limit.retryAfterMs,
       },
       {

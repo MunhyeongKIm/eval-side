@@ -60,7 +60,7 @@ export async function POST(
   const hourlyCheck = await checkHourlyLimit();
   if (!hourlyCheck.allowed) {
     return NextResponse.json(
-      { error: '시간당 평가 한도에 도달했습니다. 잠시 후 다시 시도해주세요.', remaining: hourlyCheck.remaining },
+      { error: 'Hourly evaluation limit reached. Please try again later.', remaining: hourlyCheck.remaining },
       { status: 429 }
     );
   }

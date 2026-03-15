@@ -14,7 +14,7 @@ export default function Footer() {
               <span className="text-lg font-bold text-white">EvalSide</span>
             </div>
             <p className="text-sm text-gray-500 max-w-sm leading-relaxed">
-              AI 기반 사이드 프로젝트 평가 플랫폼. 6가지 전문 관점에서 분석하고 실제 가치를 산정합니다.
+              AI-powered side project evaluation platform. Analyze from 6 expert perspectives and estimate real-world value.
             </p>
           </div>
 

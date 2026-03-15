@@ -1,12 +1,12 @@
 export interface ComparableCase {
-  // 기존
+  // existing
   name: string;
   category: string;
   outcome: string;
   scoreRange: [number, number];
   highlights: string[];
   tags: string[];
-  // 신규
+  // new
   dealType: 'acquisition' | 'acqui-hire' | 'ipo' | 'revenue' | 'funding' | 'portfolio';
   acquirer?: string;
   dealValue?: { min: number; max: number };

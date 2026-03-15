@@ -22,7 +22,7 @@ async function githubFetch(path: string): Promise<Response> {
   const res = await fetch(`${GITHUB_API}${path}`, { headers });
 
   if (res.status === 403 || res.status === 429) {
-    throw new Error('GitHub API 요청 제한에 도달했습니다. 잠시 후 다시 시도해주세요.');
+    throw new Error('GitHub API rate limit reached. Please try again later.');
   }
 
   return res;
