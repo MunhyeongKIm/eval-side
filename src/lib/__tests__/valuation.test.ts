@@ -65,7 +65,7 @@ describe('getValuationResult', () => {
   it('returns tier, dollarValue, and comparableCases', () => {
     const result = getValuationResult(60);
     expect(result.tier).toBeDefined();
-    expect(result.tier.name).toBe('Growth Project');
+    expect(result.tier.name).toBe('Early Product');
     expect(result.dollarValue).toBeGreaterThan(0);
     expect(result.comparableCases.length).toBeGreaterThan(0);
   });
