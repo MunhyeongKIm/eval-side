@@ -28,17 +28,20 @@ export default async function Home() {
       {/* Hero Section */}
       <section className="text-center pt-16 pb-8 animate-fade-in hero-gradient relative">
         <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-            AI-Powered Multi-Agent Analysis
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Early Stage &middot; Free &amp; Open Source
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-5 tracking-tight">
             Evaluate Your
             <span className="text-gradient block sm:inline"> Side Project</span>
           </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed mb-10">
-            Get an instant AI-powered evaluation of your side project. Our 6 specialized agents
-            deliver a score, dollar valuation, and actionable roadmap.
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed mb-4">
+            6 AI agents analyze your side project from every angle &mdash; tech, market, UX,
+            feasibility, growth, and risk. Get a score, valuation, and actionable roadmap.
+          </p>
+          <p className="text-gray-600 text-sm max-w-lg mx-auto mb-10">
+            We&apos;re just getting started. Free to use while we grow &mdash; daily evaluations are limited.
           </p>
 
           {/* Stats */}
@@ -261,7 +264,7 @@ export default async function Home() {
       {/* Bottom CTA */}
       <section className="text-center py-12 border-t border-gray-800/50 animate-fade-in-delay-3">
         <p className="text-sm text-gray-500 mb-3">Built for indie hackers, solo founders, and side project builders</p>
-        <div className="flex items-center justify-center gap-4 text-xs text-gray-600">
+        <div className="flex items-center justify-center gap-4 text-xs text-gray-600 mb-6">
           <span className="flex items-center gap-1.5">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M13.5 2.5l-11 11M2.5 2.5h11v11" /></svg>
             Open source
@@ -277,6 +280,10 @@ export default async function Home() {
             No sign-up required
           </span>
         </div>
+        <p className="text-xs text-gray-700 max-w-md mx-auto">
+          EvalSide is in early stage. Features and limits may change as we grow.
+          Star us on <a href="https://github.com/MunhyeongKIm/eval-side" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-gray-300 transition underline underline-offset-2">GitHub</a> to follow along!
+        </p>
       </section>
     </div>
   );

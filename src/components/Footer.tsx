@@ -14,7 +14,7 @@ export default function Footer() {
               <span className="text-lg font-bold text-white">EvalSide</span>
             </div>
             <p className="text-sm text-gray-500 max-w-sm leading-relaxed">
-              AI-powered side project evaluation platform. Analyze from 6 expert perspectives and estimate real-world value.
+              Free, open-source AI evaluation for side projects. Still early &mdash; growing one feature at a time.
             </p>
           </div>
 
@@ -39,7 +39,7 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} EvalSide. Built with Next.js &amp; AI.
           </p>
           <p className="text-xs text-gray-700">
-            Powered by multi-agent AI evaluation
+            Early stage &middot; Powered by multi-agent AI
           </p>
         </div>
       </div>
