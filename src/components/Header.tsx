@@ -12,8 +12,6 @@ export default function Header() {
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/leaderboard', label: 'Leaderboard' },
-    { href: '/pricing', label: 'Pricing' },
-    { href: '/api-docs', label: 'API Docs' },
   ];
 
   function isActive(href: string) {

@@ -23,8 +23,6 @@ export default function Footer() {
             <h4 className="text-sm font-semibold text-white mb-3">Product</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/leaderboard" className="text-gray-500 hover:text-gray-300 transition">Leaderboard</Link></li>
-              <li><Link href="/pricing" className="text-gray-500 hover:text-gray-300 transition">Pricing</Link></li>
-              <li><Link href="/api-docs" className="text-gray-500 hover:text-gray-300 transition">API Docs</Link></li>
             </ul>
           </div>
 
@@ -32,7 +30,6 @@ export default function Footer() {
             <h4 className="text-sm font-semibold text-white mb-3">Resources</h4>
             <ul className="space-y-2 text-sm">
               <li><a href="https://github.com/MunhyeongKIm/eval-side" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-gray-300 transition">GitHub</a></li>
-              <li><Link href="/api-docs" className="text-gray-500 hover:text-gray-300 transition">Documentation</Link></li>
             </ul>
           </div>
         </div>
