@@ -4,6 +4,8 @@ An AI-powered evaluation system that analyzes your side project across six dimen
 
 Submit a text description or a GitHub repository URL, and six specialized AI evaluators run in parallel to produce a scored report with strengths, improvements, a valuation tier, and matching real-world project comparisons.
 
+https://eval-side.vercel.app/
+
 ---
 
 ## Features
